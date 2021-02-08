@@ -1,13 +1,13 @@
 import pandas as pd
 from pathlib import Path
-import sys
+import sys, time, shutil
 #minutos que definen el criterio de inasistencia
 assist_crit = 45
 
 #directorios y archivos
 working_dir = Path('__file__').resolve().parent
 output_dir = working_dir.joinpath('attendance')
-bk_dir = working_dir.joinpath('bakckup')
+bk_dir = working_dir.joinpath('backup')
 students_file_dir = working_dir.joinpath('students.csv')
 attendance_file_dir = working_dir.joinpath('attendance.csv')
 
@@ -43,7 +43,8 @@ def main(argv):
         elif argv[1] == '-bk':
             #TODO: implementar los metodos de backup del attendace original y el output en xlsx para solo tener que hacer ctl +  c y ctl + v
             #ademas de el metodo eliminar el archivo de attendance para dejarlo listo para otra ejecucion
-            pass
+            bk(response)
+            delete_csv()
         elif argv[1] == '-p' or argv[1] == '-P':
             print(response)
         else:
@@ -53,6 +54,18 @@ def main(argv):
 
     except Exception as e:
         print('error: ' + str(e))
+
+def bk(dataframe):
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    result_filename = 'attendance{}.xlsx'.format(timestr)
+    bk_attendance_filename = 'attendance{}.csv'.format(timestr)
+    result_filename_full = output_dir.joinpath(result_filename)
+    bk_filename_full = bk_dir.joinpath(bk_attendance_filename)
+    dataframe.to_excel(result_filename_full)
+    shutil.copy2(attendance_file_dir, bk_filename_full)
+
+def delete_csv():
+    attendance_file_dir.unlink()
 
 #main lock
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
-﻿Name,Username,Role,AttendeeType,"First join","Last leave","Total time",Joins
+Name,Username,Role,AttendeeType,"First join","Last leave","Total time",Joins
+"Andres Leonardo Bayona Latorre",al.bayona,Participant,Integration,"02/03/2021 10:53:00","02/03/2021 11:54:18",01:01:17,1
 "David Guillermo Fonseca Ramirez",dg.fonseca,Moderator,Integration,"02/03/2021 10:54:46","02/03/2021 12:32:10",01:37:23,1
 "Jimmy David Pepinosa Castañeda",jd.pepinosa,Participant,Integration,"02/03/2021 10:55:14","02/03/2021 12:28:20",01:33:05,1
 "Santiago Esteban Gamboa Murillo",se.gamboa,Participant,Integration,"02/03/2021 10:55:18","02/03/2021 12:21:04",01:25:45,1

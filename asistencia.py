@@ -1,35 +1,34 @@
-import csv
+import pandas as pd
+from pathlib import Path
 
+assist_crit = 45
 late = {}
-students = []
-
+working_dir = Path('__file__').resolve().parent
+output_dir = working_dir.joinpath('attendance')
+bk_dir = working_dir.joinpath('bakckup')
+students_file_dir = working_dir.joinpath('students.csv')
+attendance_file_dir = working_dir.joinpath('attendance.csv')
+try:
 #Script para leer el archivo de los estudiantes y almacenarlos en una lista
-with open('students.csv') as students_file:
-    csv_students = csv.reader(students_file, delimiter=',')
-    for row in csv_students:
-        students.append(row[0])
-
+    students = pd.read_csv(students_file_dir)
+    attendance = pd.read_csv(attendance_file_dir, usecols=['Username', 'Total time'])
 #Script que lee la asistencia, corrobora si ese estudiante asistió, si asistió lo saca de la
 #lista de estudiantes previamente definida. Los estudiantes que permanezcan en esa lista, no asistieron
 #Adicionalmente corrobora si duró mas de 45 minutos, si no, la consola mostrara un mensaje informadolo.
-try:
-    with open('attendance.csv') as attendance_file:
-        csv_attendance = csv.reader(attendance_file, delimiter=',')
-        header = True
-        for row in csv_attendance:
-            if header:
-                header = False
-                continue
-            login = row[1]
-            try:
-                students.remove(login)
-            except:
-                print("La persona "+row[0]+" no es estudiante de esta seccion")
-            time = row[6].split(':')
-            minutes = int(time[0])*60+int(time[1])*1
-            if minutes < 45:
-                print("El estudiante", row[0], "asitió pero solo estuvo ",minutes," Minutos")
+
+    assisted = pd.merge(students, attendance, how='inner', on=['Username','Username'])
+
+    assisted['Total time'] = assisted['Total time'].apply(lambda x: sum([a*b for a,b in zip(list(map(int,x.split(':')))[::-1],[1/60,1,60])]))
+    assisted = pd.merge(students,assisted, how='left', on=['Username','Username'])
+
+    tmpAssist = []
+    for i,student in assisted.iterrows():
+        if student['Total time'] > assist_crit:
+            tmpAssist.append('X')
+        else: 
+            tmpAssist.append('O')
+    xno = pd.DataFrame(tmpAssist)
+    assisted['attend'] = xno.values
+    print(assisted)
 except:
-    print("Error con la lectura del archivo, recuerda que el nombre debe ser: attendance")
-for student in students:
-    print("El estudiante ", student, "No asistió a la clase")
+    pass
